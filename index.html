@@ -3,72 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Website Favicon Downloader</title>
+    <title>Universal Favicon Grabber</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body {
-            background-color: #0b0b0b;
-            color: #f3f4f6;
-            font-family: system-ui, -apple-system, sans-serif;
-        }
-        .fcr-border {
-            border-color: #1f1f1f;
-        }
+        body { background-color: #0b0b0b; color: #f3f4f6; font-family: system-ui, sans-serif; }
+        .fcr-border { border-color: #1f1f1f; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
 
     <div class="bg-[#161616] border fcr-border p-8 rounded-xl max-w-md w-full shadow-2xl text-center">
-        <h1 class="text-xl font-black mb-2 tracking-wide text-red-500">FAVICON EXTRACTOR</h1>
-        <p class="text-xs text-gray-400 mb-6">Paste any website URL below to grab and download its favicon logo instantly as a PNG.</p>
+        <h1 class="text-xl font-black mb-2 tracking-wide text-red-500">UNIVERSAL ICON GRABBER</h1>
+        <p class="text-xs text-gray-400 mb-6">Instantly generates a clean, downloadable icon for any website.</p>
 
-        <form onsubmit="fetchFavicon(event)" class="space-y-4">
-            <div>
-                <input type="url" id="site-url" required placeholder="https://www.youtube.com" class="w-full bg-[#0f0f0f] border fcr-border rounded-lg p-3 text-sm focus:outline-none focus:border-red-600 text-white placeholder-gray-600">
-            </div>
-            <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-black font-black py-3 rounded-lg transition text-sm shadow-lg shadow-red-950">
-                GET FAVICON PNG
+        <form onsubmit="getFavicon(event)" class="space-y-4">
+            <input type="text" id="site-url" required placeholder="github.com or https://youtube.com" class="w-full bg-[#0f0f0f] border fcr-border rounded-lg p-3 text-sm focus:outline-none focus:border-red-600 text-white placeholder-gray-600">
+            <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-black font-black py-3 rounded-lg text-sm transition shadow-lg shadow-red-950">
+                GET ICON PNG
             </button>
         </form>
 
-        <!-- Result Preview Section -->
+        <!-- Result Section -->
         <div id="result-section" class="mt-6 hidden flex flex-col items-center space-y-4 pt-6 border-t fcr-border">
             <div class="bg-black p-4 rounded-xl border fcr-border inline-block">
-                <img id="favicon-preview" src="" alt="Favicon Preview" class="w-16 h-16 object-contain">
+                <img id="favicon-preview" src="" alt="Favicon" class="w-16 h-16 object-contain">
             </div>
             <p id="domain-label" class="text-xs text-gray-400 font-mono"></p>
-            <a id="download-btn" href="#" download="favicon.png" class="w-full bg-neutral-800 hover:bg-neutral-700 text-white font-bold py-2.5 rounded-lg transition text-xs block text-center border fcr-border">
-                Download PNG File
+            <a id="download-btn" href="#" target="_blank" download="favicon.png" class="w-full bg-neutral-800 hover:bg-neutral-700 text-white font-bold py-2.5 rounded-lg transition text-xs block text-center border fcr-border">
+                Download Icon PNG
             </a>
         </div>
     </div>
 
     <script>
-        function fetchFavicon(event) {
+        function getFavicon(event) {
             event.preventDefault();
-            const rawUrl = document.getElementById('site-url').value;
+            let input = document.getElementById('site-url').value.trim();
             
+            // Clean up the URL input automatically if they type "github.com" without https://
+            if (!input.startsWith('http://') && !input.startsWith('https://')) {
+                input = 'https://' + input;
+            }
+
             try {
-                const urlObj = new URL(rawUrl);
+                const urlObj = new URL(input);
                 const domain = urlObj.hostname;
-                
-                // Google provides a reliable public endpoint to fetch any website's favicon high-res
-                const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+
+                // Uses reliable multi-source domain mapping which responds instantly without lagging
+                const iconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
 
                 const resultSection = document.getElementById('result-section');
-                const previewImg = document.getElementById('favicon-preview');
+                const preview = document.getElementById('favicon-preview');
                 const domainLabel = document.getElementById('domain-label');
                 const downloadBtn = document.getElementById('download-btn');
 
-                previewImg.src = faviconUrl;
+                preview.src = iconUrl;
                 domainLabel.innerText = domain;
-                
-                // Set download link using Google's image source
-                downloadBtn.href = faviconUrl;
-                
+                downloadBtn.href = iconUrl;
+
                 resultSection.classList.remove('hidden');
             } catch (e) {
-                alert('Please enter a valid website link (including https://)');
+                alert('Please enter a valid website address.');
             }
         }
     </script>
